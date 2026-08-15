@@ -31,7 +31,7 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{nome} — Links</title>
+    <title>{`${nome} | Links`}</title>
     <meta name="description" content={descricao} />
     <link rel="canonical" href={config.host} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -40,7 +40,7 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     <link rel="stylesheet" href={config.fontHref} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={nome} />
-    <meta property="og:title" content={`${nome} — Links`} />
+    <meta property="og:title" content={`${nome} | Links`} />
     <meta property="og:description" content={descricao} />
     {avatar && <meta property="og:image" content={avatar} />}
     <meta property="og:url" content={config.host} />
@@ -116,7 +116,7 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
       )}
 
       {data && data.socials.length > 0 && !socialsNoTopo && (
-        <nav class="sociais" aria-label="Redes sociais">
+        <nav class="sociais rodape" aria-label="Redes sociais">
           {data.socials.map((s) => (
             <a href={s.url} target="_blank" rel="noopener" aria-label={s.network} title={s.network}>
               <SocialIcon network={s.network} />
@@ -124,8 +124,6 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
           ))}
         </nav>
       )}
-
-      <footer>{config.name}</footer>
     </main>
   </body>
 </html>
@@ -183,23 +181,24 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     height: 96px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+    border: 2px solid var(--accent);
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.5),
-      0 0 40px color-mix(in srgb, var(--accent) 22%, transparent);
+      0 0 40px color-mix(in srgb, var(--accent) 20%, transparent);
   }
+  /* O nome usa o mesmo tratamento dos títulos de seção que o Lester
+     aprovou: Unbounded, caixa alta, tracking generoso. */
   h1 {
     font-family: var(--fdisplay);
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
   }
   body.caps h1 {
     text-transform: uppercase;
-    letter-spacing: 0.06em;
   }
   .bio {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.65);
     font-size: 0.95rem;
     max-width: 44ch;
   }
@@ -242,6 +241,7 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     gap: 12px;
     margin-top: 10px;
   }
+  /* Sem os traços laterais (feedback do Lester) — só a fonte falando */
   .secao h2 {
     font-family: var(--fdisplay);
     font-size: 0.72rem;
@@ -249,18 +249,8 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     text-transform: uppercase;
     letter-spacing: 0.2em;
     color: color-mix(in srgb, var(--accent) 75%, #fff 25%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+    text-align: center;
     margin-top: 8px;
-  }
-  .secao h2::before,
-  .secao h2::after {
-    content: '';
-    height: 1px;
-    width: 26px;
-    background: color-mix(in srgb, var(--accent) 55%, transparent);
   }
 
   /* ---- Seção CARROSSEL (estilo Komi): rolagem horizontal com snap ---- */
@@ -301,8 +291,8 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     object-fit: cover;
     display: block;
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    background: #151515;
     transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
   .cartao:hover img,
@@ -326,13 +316,8 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     text-align: center;
     color: rgba(255, 255, 255, 0.5);
   }
-  footer {
-    margin-top: 40px;
-    text-align: center;
-    font-family: var(--fdisplay);
-    color: rgba(255, 255, 255, 0.35);
-    font-size: 0.7rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+  .sociais.rodape {
+    margin-top: 34px;
+    padding-bottom: 8px;
   }
 </style>

@@ -6,7 +6,7 @@ export interface BrandConfig {
   host: string;
   accent: string;
   bg: string;
-  /** Fonte display (nome, títulos de seção, rodapé). */
+  /** Fonte display (nome e títulos de seção). */
   displayFont: string;
   /** CSS do Google Fonts para a fonte display. */
   fontHref: string;
@@ -14,29 +14,31 @@ export interface BrandConfig {
   uppercaseName: boolean;
 }
 
-// Preto + vermelho nas DUAS marcas (padrão dos Linktrees originais).
-// v2 (Fase 5): cada marca ganha uma fonte display própria — Almanac
-// com Unbounded (eletrônica/moderna), GIBI com Archivo Black (poster,
-// na vibe gibi/quadrinho sem ser caricata). Ajustes finos por conta
-// da direção de arte do Lester.
+/**
+ * DESIGN SYSTEM ÚNICO para as duas marcas (decisão do Lester,
+ * 15/08/2026): layouts duplicados, mesma fonte (Unbounded — a dos
+ * títulos de seção que ele aprovou), vermelho DE VERDADE no contorno
+ * e fundo preto/grafite SEM tons azulados. As marcas diferem só em
+ * nome e domínio.
+ */
+const DESIGN = {
+  accent: '#ff1a1a',
+  bg: '#0d0d0d',
+  displayFont: "'Unbounded', system-ui, sans-serif",
+  fontHref:
+    'https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&display=swap',
+  uppercaseName: true,
+} as const;
+
 export const BRANDS: Record<Brand, BrandConfig> = {
   gibi: {
     name: 'GIBI Label',
     host: 'https://links.gibilabel.com',
-    accent: '#ff3b30',
-    bg: '#0b0909',
-    displayFont: "'Archivo Black', system-ui, sans-serif",
-    fontHref: 'https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap',
-    uppercaseName: true,
+    ...DESIGN,
   },
   almanac: {
     name: 'Almanac',
     host: 'https://links.duoalmanac.com',
-    accent: '#ff5347',
-    bg: '#0a0a0f',
-    displayFont: "'Unbounded', system-ui, sans-serif",
-    fontHref:
-      'https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&display=swap',
-    uppercaseName: false,
+    ...DESIGN,
   },
 };
