@@ -34,7 +34,8 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     <title>{`${nome} | Links`}</title>
     <meta name="description" content={descricao} />
     <link rel="canonical" href={config.host} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" href={`/favicon-${brand}.png`} />
+    <link rel="apple-touch-icon" href={`/favicon-${brand}.png`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href={config.fontHref} />
