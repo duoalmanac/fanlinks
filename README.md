@@ -1,47 +1,52 @@
 # Fanlinks — GIBI Label + Almanac
 
-Páginas de fanlink (estilo Linkfire) servidas por UM projeto Vercel em
-dois domínios:
+Páginas de link-in-bio (estilo Linktree, rumo ao Komi) servidas por UM
+projeto Vercel em dois domínios:
 
-- `links.gibilabel.com` → páginas em `src/pages/gibi/`
-- `links.duoalmanac.com` → páginas em `src/pages/almanac/`
+- `links.gibilabel.com` → marca GIBI
+- `links.duoalmanac.com` → marca Almanac
 
-O `vercel.json` faz o rewrite por hostname: quem visita
-`links.gibilabel.com/meu-release` recebe `/gibi/meu-release` sem ver o
-prefixo. Os rewrites EXCLUEM `/covers/`, `/_astro/` e o favicon — sem
-essa exclusão, os assets virariam 404.
+**O conteúdo mora no Supabase do Almanac Center** (tabelas `fanlink_*`,
+migration `20260815120000`): perfil, seções, links e ícones sociais.
+Esta página é SSR (`@astrojs/vercel`) e lê o banco com a anon key — a
+RLS entrega só o que está ativo e fora da lixeira. Salvou no admin do
+Center (Marketing → Links), o link público reflete em ~1 min (cache
+CDN `s-maxage=60`). Sem redeploy.
 
-## Adicionar um release
+O roteamento por domínio é feito em `src/middleware.ts` (hostname →
+`/gibi` ou `/almanac`). Não usar rewrites do `vercel.json`: com o
+adapter Vercel eles não se aplicam (Build Output API).
 
-1. Colocar a capa em `public/covers/` — **JPG ou PNG, mínimo 640×640**
-   (SVG não aparece no card de preview do WhatsApp).
-2. Adicionar uma entrada em `src/data/releases.ts` (slug, marca, título,
-   artista, capa e os links das plataformas — só os preenchidos viram
-   botão).
-3. Commit + push → a Vercel publica sozinha.
+## Estrutura
 
-A URL pública fica `https://links.<dominio>/<slug>`.
-
-## Marcas
-
-Nome, domínio e cores de cada marca em `src/data/brands.ts`.
-As cores atuais são placeholder.
+```
+src/middleware.ts          hostname → marca
+src/data/brands.ts         nome, domínio e cores por marca
+src/lib/supabase.ts        cliente (anon; env vars opcionais)
+src/lib/fanlink.ts         carga da página, blocos, parser de embed
+src/components/BioPage.astro    a página inteira
+src/components/LinkCard.astro   botão / destaque / player embed
+src/components/SocialIcon.astro ícones (simple-icons)
+```
 
 ## Comandos
 
 ```
-npm run dev       dev server (localhost:4321)
-npm run build     gera o site estático em dist/
-npm run preview   serve o build local
+npm run dev       dev server SSR (localhost:4321)
+npm run build     build de produção (Build Output API)
 ```
 
 ## Setup na Vercel (uma vez)
 
 1. Repo no GitHub (`duoalmanac/fanlinks`) → Import na Vercel
-   (framework: Astro, detectado sozinho).
+   (framework Astro, detectado sozinho).
 2. Em Project → Settings → Domains, adicionar `links.gibilabel.com` e
    `links.duoalmanac.com`.
 3. No DNS de cada domínio, criar o CNAME que a Vercel indicar
    (`links` → `cname.vercel-dns.com`).
-4. Depois do primeiro deploy, conferir nos dois domínios que a capa
-   carrega (prova de que as exclusões do rewrite estão certas).
+4. Conferir nos dois domínios: perfil, links com capa, embed do
+   YouTube e ícones sociais.
+
+Env vars são OPCIONAIS (`PUBLIC_SUPABASE_URL`,
+`PUBLIC_SUPABASE_ANON_KEY`) — sem elas o código usa os valores
+públicos do projeto de SP, os mesmos do bundle do Center.

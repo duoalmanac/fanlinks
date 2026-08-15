@@ -1,6 +1,6 @@
 ---
 // Página raiz — só é vista pela URL interna da Vercel (*.vercel.app).
-// Nos domínios públicos, o rewrite por hostname leva direto ao índice da marca.
+// Nos domínios públicos, o middleware leva direto à página da marca.
 ---
 
 <!doctype html>
@@ -9,12 +9,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Fanlinks</title>
+    <meta name="robots" content="noindex" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
     <main>
-      <a href="/gibi/">GIBI Label</a>
-      <a href="/almanac/">Almanac</a>
+      <a href="/gibi">GIBI Label</a>
+      <a href="/almanac">Almanac</a>
     </main>
   </body>
 </html>

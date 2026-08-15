@@ -1,0 +1,128 @@
+---
+import type { FanlinkLink, EmbedInfo } from '../lib/fanlink';
+
+interface Props {
+  link: FanlinkLink;
+  player: EmbedInfo | null;
+}
+
+const { link, player } = Astro.props;
+---
+
+{player ? (
+  <div class="embed">
+    <p>{link.title}</p>
+    <div
+      class:list={['frame', { proporcional: player.height === null }]}
+      style={player.height !== null ? `height: ${player.height}px` : undefined}
+    >
+      <iframe
+        src={player.src}
+        title={link.title}
+        loading="lazy"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+) : link.layout === 'featured' ? (
+  <a class="destaque" href={link.url} target="_blank" rel="noopener">
+    {link.thumb_url && (
+      <img src={link.thumb_url} alt="" loading="lazy" referrerpolicy="no-referrer" />
+    )}
+    <span>{link.title}</span>
+  </a>
+) : (
+  <a class="botao" href={link.url} target="_blank" rel="noopener">
+    {link.thumb_url ? (
+      <img src={link.thumb_url} alt="" loading="lazy" referrerpolicy="no-referrer" />
+    ) : (
+      <span class="semthumb" aria-hidden="true"></span>
+    )}
+    <span class="titulo">{link.title}</span>
+    <span class="espaco" aria-hidden="true"></span>
+  </a>
+)}
+
+<style>
+  .botao {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    min-height: 60px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, rgba(255, 255, 255, 0.08));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  }
+  .botao:hover {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.09);
+    transform: translateY(-1px);
+  }
+  .botao img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+  }
+  .titulo {
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .destaque {
+    display: block;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, rgba(255, 255, 255, 0.08));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .destaque:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .destaque img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+  .destaque span {
+    display: block;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .embed p {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 8px;
+  }
+  .frame {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #000;
+  }
+  .frame.proporcional {
+    aspect-ratio: 16 / 9;
+  }
+  .frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+</style>

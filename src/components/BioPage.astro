@@ -1,0 +1,215 @@
+---
+import { BRANDS, type Brand } from '../data/brands';
+import { loadFanlinkPage, avatarUrl, embedInfo, type FanlinkLink } from '../lib/fanlink';
+import SocialIcon from './SocialIcon.astro';
+import LinkCard from './LinkCard.astro';
+
+interface Props {
+  brand: Brand;
+}
+
+const { brand } = Astro.props;
+const config = BRANDS[brand];
+const data = await loadFanlinkPage(brand);
+
+// Cache curto na CDN: mudou no Center, o link atualiza em ~1 min.
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=0, s-maxage=60, stale-while-revalidate=600',
+);
+
+const nome = data?.profile.display_name ?? config.name;
+const avatar = avatarUrl(data?.profile.avatar_path ?? null);
+const socialsNoTopo = data?.profile.social_position === 'top';
+const descricao = data?.profile.bio ?? `Todos os links de ${nome} em um só lugar.`;
+
+const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(l.url) : null });
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{nome} — Links</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={config.host} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={nome} />
+    <meta property="og:title" content={`${nome} — Links`} />
+    <meta property="og:description" content={descricao} />
+    {avatar && <meta property="og:image" content={avatar} />}
+    <meta property="og:url" content={config.host} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="theme-color" content={config.bg} />
+  </head>
+  <body style={`--accent: ${config.accent}; --bg: ${config.bg};`}>
+    <div class="glow" aria-hidden="true"></div>
+    <main>
+      <header class="perfil">
+        {avatar && <img class="avatar" src={avatar} alt={`Foto de ${nome}`} width="192" height="192" />}
+        <h1>{nome}</h1>
+        {data?.profile.bio && <p class="bio">{data.profile.bio}</p>}
+      </header>
+
+      {data && data.socials.length > 0 && socialsNoTopo && (
+        <nav class="sociais" aria-label="Redes sociais">
+          {data.socials.map((s) => (
+            <a href={s.url} target="_blank" rel="noopener" aria-label={s.network} title={s.network}>
+              <SocialIcon network={s.network} />
+            </a>
+          ))}
+        </nav>
+      )}
+
+      {!data && <p class="vazio">Página em construção.</p>}
+
+      {data && (
+        <div class="blocos">
+          {data.blocks.map((b) =>
+            b.kind === 'link' ? (
+              <LinkCard {...renderaveis(b.link)} />
+            ) : (
+              <section class="secao">
+                {b.section.title && <h2>{b.section.title}</h2>}
+                {b.section.links.map((l) => <LinkCard {...renderaveis(l)} />)}
+              </section>
+            ),
+          )}
+        </div>
+      )}
+
+      {data && data.socials.length > 0 && !socialsNoTopo && (
+        <nav class="sociais" aria-label="Redes sociais">
+          {data.socials.map((s) => (
+            <a href={s.url} target="_blank" rel="noopener" aria-label={s.network} title={s.network}>
+              <SocialIcon network={s.network} />
+            </a>
+          ))}
+        </nav>
+      )}
+
+      <footer>{config.name}</footer>
+    </main>
+  </body>
+</html>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: #fff;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .glow {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(60% 40% at 50% -10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 48px 16px 40px;
+  }
+  .perfil {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+  .avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid color-mix(in srgb, var(--accent) 65%, transparent);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .bio {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    max-width: 44ch;
+  }
+  .sociais {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .sociais a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .sociais a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+  }
+  .sociais :global(svg) {
+    width: 20px;
+    height: 20px;
+    fill: rgba(255, 255, 255, 0.85);
+  }
+  .sociais a:hover :global(svg) {
+    fill: var(--accent);
+  }
+  .blocos {
+    margin-top: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .secao {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .secao h2 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: color-mix(in srgb, var(--accent) 70%, #fff 30%);
+    text-align: center;
+    margin-top: 8px;
+  }
+  .vazio {
+    margin-top: 40px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+</style>
