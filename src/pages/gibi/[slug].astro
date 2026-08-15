@@ -1,0 +1,14 @@
+---
+import LinkPage from '../../components/LinkPage.astro';
+import { releases } from '../../data/releases';
+
+export function getStaticPaths() {
+  return releases
+    .filter((r) => r.brand === 'gibi')
+    .map((r) => ({ params: { slug: r.slug }, props: { release: r } }));
+}
+
+const { release } = Astro.props;
+---
+
+<LinkPage release={release} />

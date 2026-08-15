@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/:path((?!gibi/|almanac/|covers/|_astro/|favicon\\.svg).*)",
+      "has": [{ "type": "host", "value": "links.gibilabel.com" }],
+      "destination": "/gibi/:path"
+    },
+    {
+      "source": "/:path((?!gibi/|almanac/|covers/|_astro/|favicon\\.svg).*)",
+      "has": [{ "type": "host", "value": "links.duoalmanac.com" }],
+      "destination": "/almanac/:path"
+    }
+  ]
+}
