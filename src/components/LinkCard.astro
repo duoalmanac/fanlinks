@@ -128,4 +128,14 @@ const { link, player } = Astro.props;
     border: 0;
     display: block;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .botao,
+    .destaque {
+      transition: none;
+    }
+    .botao:hover,
+    .destaque:hover {
+      transform: none;
+    }
+  }
 </style>

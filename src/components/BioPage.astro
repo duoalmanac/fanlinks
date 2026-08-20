@@ -86,7 +86,7 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
                     {b.section.links.map((l) => (
                       <a class="cartao" href={l.url} target="_blank" rel="noopener">
                         {l.thumb_url ? (
-                          <img src={l.thumb_url} alt="" loading="lazy" referrerpolicy="no-referrer" />
+                          <img src={l.thumb_url} alt="" width="300" height="300" loading="lazy" referrerpolicy="no-referrer" />
                         ) : (
                           <span class="ph" aria-hidden="true"></span>
                         )}
@@ -99,7 +99,7 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
                     {b.section.links.map((l) => (
                       <a class="cartao" href={l.url} target="_blank" rel="noopener">
                         {l.thumb_url ? (
-                          <img src={l.thumb_url} alt="" loading="lazy" referrerpolicy="no-referrer" />
+                          <img src={l.thumb_url} alt="" width="300" height="300" loading="lazy" referrerpolicy="no-referrer" />
                         ) : (
                           <span class="ph" aria-hidden="true"></span>
                         )}
@@ -140,10 +140,15 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
   }
   body {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--bg);
     color: #fff;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
+  }
+  a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .glow {
     position: fixed;
@@ -168,7 +173,7 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
     z-index: 1;
     max-width: 600px;
     margin: 0 auto;
-    padding: 48px 16px 40px;
+    padding: 48px 16px calc(40px + env(safe-area-inset-bottom));
   }
   .perfil {
     display: flex;
@@ -320,5 +325,17 @@ const renderaveis = (l: FanlinkLink) => ({ link: l, player: l.embed ? embedInfo(
   .sociais.rodape {
     margin-top: 34px;
     padding-bottom: 8px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sociais a,
+    .cartao img,
+    .cartao .ph {
+      transition: none;
+    }
+    .sociais a:hover,
+    .cartao:hover img,
+    .cartao:hover .ph {
+      transform: none;
+    }
   }
 </style>
